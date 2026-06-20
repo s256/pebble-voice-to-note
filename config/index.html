@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice to Note Settings</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      padding: 16px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #00d4aa;
+      text-align: center;
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #16213e;
+      color: #eee;
+      font-size: 15px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #00d4aa;
+    }
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+    }
+    .hint {
+      font-size: 11px;
+      color: #666;
+      margin-top: 4px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+    .btn-save {
+      background: #00d4aa;
+      color: #1a1a2e;
+    }
+    .btn-save:active {
+      background: #00b894;
+    }
+  </style>
+</head>
+<body>
+  <h1>Voice to Note</h1>
+
+  <div class="field">
+    <label>Webhook URL</label>
+    <input type="url" id="url" placeholder="https://n8n.example.com/webhook/xxx">
+  </div>
+
+  <div class="field">
+    <label>HTTP Method</label>
+    <select id="method">
+      <option value="POST">POST</option>
+      <option value="PUT">PUT</option>
+      <option value="PATCH">PATCH</option>
+      <option value="GET">GET</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Headers (JSON)</label>
+    <textarea id="headers" rows="3" placeholder='{"Content-Type": "application/json"}'></textarea>
+    <div class="hint">JSON object of key-value header pairs</div>
+  </div>
+
+  <div class="field">
+    <label>Request Body Template</label>
+    <textarea id="body" rows="4" placeholder='{"note": "{{note}}"}'></textarea>
+    <div class="hint">Use <code>{{note}}</code> as placeholder for the transcribed text</div>
+  </div>
+
+  <button class="btn btn-save" id="save">Save Settings</button>
+
+  <script>
+    function getQueryParam(key) {
+      var match = window.location.search.match(new RegExp('[?&]' + key + '=([^&]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    // Load existing config from URL params
+    var configStr = getQueryParam('config');
+    if (configStr) {
+      try {
+        var config = JSON.parse(configStr);
+        document.getElementById('url').value = config.url || '';
+        document.getElementById('method').value = config.method || 'POST';
+        document.getElementById('headers').value = config.headers || '{"Content-Type": "application/json"}';
+        document.getElementById('body').value = config.body || '{"note": "{{note}}"}';
+      } catch (e) {
+        console.log('Failed to parse config:', e);
+      }
+    }
+
+    // Save and close
+    document.getElementById('save').addEventListener('click', function () {
+      var result = {
+        url: document.getElementById('url').value.trim(),
+        method: document.getElementById('method').value,
+        headers: document.getElementById('headers').value.trim(),
+        body: document.getElementById('body').value.trim()
+      };
+
+      // Validate URL
+      if (!result.url) {
+        alert('Please enter a webhook URL');
+        return;
+      }
+
+      // Validate headers JSON
+      if (result.headers) {
+        try {
+          JSON.parse(result.headers);
+        } catch (e) {
+          alert('Headers must be valid JSON');
+          return;
+        }
+      }
+
+      var returnUrl = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(result));
+      window.location.href = returnUrl;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "name": "voice-to-note",
+  "author": "snoe",
+  "version": "0.1.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Voice to Note",
+    "uuid": "2805198a-e01c-473e-86b7-fe52fd823a55",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["emery"],
+    "watchapp": {
+      "watchface": false
+    },
+    "capabilities": ["configurable"],
+    "messageKeys": [
+      "TRANSCRIPTION",
+      "STATUS",
+      "CONFIG_URL",
+      "CONFIG_METHOD",
+      "CONFIG_HEADERS",
+      "CONFIG_BODY"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "png",
+          "name": "IMAGE_MIC",
+          "file": "images/mic.png"
+        }
+      ]
+    }
+  }
+}

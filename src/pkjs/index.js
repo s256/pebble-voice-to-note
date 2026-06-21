@@ -104,7 +104,6 @@ function sendNote(transcription) {
 // Listen for when PebbleKit JS is ready
 Pebble.addEventListener('ready', function () {
   console.log('PebbleKit JS ready');
-  sendStatus(1);
 });
 
 // Receive transcription from watch
@@ -119,7 +118,7 @@ Pebble.addEventListener('appmessage', function (e) {
 // Configuration page
 Pebble.addEventListener('showConfiguration', function () {
   var config = getConfig();
-  var configUrl = 'https://snoe.github.io/voice-to-note/config/index.html';
+  var configUrl = 'https://s256.github.io/pebble-voice-to-note/index.html';
   var params = '?config=' + encodeURIComponent(JSON.stringify(config));
   Pebble.openURL(configUrl + params);
 });

@@ -27,15 +27,18 @@ Open the app settings in the Pebble companion app to configure:
 
 ## Prerequisites
 
-- [Pebble SDK](https://developer.rebble.io/sdk/) (pebble-tool via uv)
+- [Pebble SDK](https://developer.repebble.com/sdk/) (pebble-tool via uv)
 - Pebble Time 2 (or emulator with `emery` platform)
-- Phone with Pebble app configured for **local dictation** (Settings → Voice Language → download offline model)
+- Official Pebble app ([rePebble.com/app](https://repebble.com/app)) with **local speech recognition** enabled
+  - Settings → Speech Recognition → "Local Only" or "Local (with Cloud Fallback)"
+  - Download the offline model (parakeet-tdt-0.6b-v3, ~715MB)
+- PebbleOS ≥ 4.9.158 on your watch (earlier firmware has a dictation bug)
 
 ## Quick Start
 
 ```bash
-# Install SDK
-uv tool install pebble-tool --python 3.13
+# Install SDK (see docs/SETUP.md for full walkthrough)
+uv tool install pebble-tool
 pebble sdk install latest
 
 # Build
@@ -80,9 +83,17 @@ The configuration HTML is hosted on GitHub Pages. After pushing:
 2. Your config URL: `https://<username>.github.io/voice-to-note/config/index.html`
 3. Update the URL in `src/pkjs/index.js` (`showConfiguration` handler)
 
+## Documentation
+
+- **[docs/SETUP.md](docs/SETUP.md)** — Full setup walkthrough (system deps, SDK, phone, watch)
+- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** — Build, test, debug workflow
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — How everything connects end-to-end
+
 ## Emulator Notes
 
-The emulator has no microphone. Use `pebble transcribe "your text"` to simulate dictation results. Real speech recognition requires a physical Pebble Time 2 paired with a phone.
+The emulator has no microphone. Use `pebble transcribe "your text"` to simulate
+dictation results. Real speech recognition requires a physical Pebble Time 2
+paired with a phone running the official Pebble app.
 
 ## License
 

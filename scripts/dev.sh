@@ -7,15 +7,18 @@ set -e
 
 PLATFORM="${1:-emery}"
 
+# Fedora: ensure /usr/local/lib is in library path (sndio, libbz2 compat)
+export LD_LIBRARY_PATH="/usr/local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
 echo "Building voice-to-note for $PLATFORM..."
 pebble build
 
-echo "Installing on emulator ($PLATFORM)..."
-pebble install --emulator "$PLATFORM"
-
+echo "Installing on emulator ($PLATFORM) with logs..."
 echo ""
-echo "App installed. To test dictation in emulator:"
-echo "  pebble transcribe 'Hello this is a test note'"
+echo "NOTE: On emery, AppMessage JS→C does not work in the emulator"
+echo "      (known pypkjs bug). The app WILL work on a real watch."
 echo ""
-echo "To test with real watch:"
-echo "  pebble install --phone <YOUR_PHONE_IP>"
+echo "To test dictation: pebble transcribe 'test note' (in another terminal)"
+echo "To test on watch:  pebble install --logs --phone <PHONE_IP>"
+echo ""
+pebble install --emulator "$PLATFORM" --logs

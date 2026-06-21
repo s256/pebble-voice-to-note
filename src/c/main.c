@@ -7,7 +7,8 @@ static TextLayer *s_prompt_layer;
 static TextLayer *s_status_layer;
 static DictationSession *s_dictation_session;
 static char s_transcription_buffer[DICTATION_BUFFER_SIZE];
-static bool s_js_ready;
+// No JS-ready handshake needed — AppMessage queues outbound messages
+// until the JS layer is ready to receive them.
 
 // AppMessage keys (must match package.json messageKeys order)
 enum {
@@ -24,11 +25,6 @@ static void update_status(const char *text) {
 }
 
 static void send_transcription(const char *text) {
-  if (!s_js_ready) {
-    update_status("Phone not ready");
-    return;
-  }
-
   DictionaryIterator *iter;
   AppMessageResult result = app_message_outbox_begin(&iter);
   if (result != APP_MSG_OK) {
@@ -69,14 +65,10 @@ static void click_config_provider(void *context) {
 }
 
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  // Check for JS ready signal (sent as STATUS key with value 1)
   Tuple *status_tuple = dict_find(iter, KEY_STATUS);
   if (status_tuple) {
     int status_val = status_tuple->value->int32;
-    if (status_val == 1) {
-      s_js_ready = true;
-      update_status("Ready \xe2\x80\x94 press SELECT");
-    } else if (status_val == 200) {
+    if (status_val == 200) {
       update_status("Sent!");
       vibes_short_pulse();
     } else {
@@ -120,7 +112,7 @@ static void main_window_load(Window *window) {
   text_layer_set_text_color(s_status_layer, GColorLightGray);
   text_layer_set_font(s_status_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
   text_layer_set_text_alignment(s_status_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_status_layer, "Connecting...");
+  text_layer_set_text(s_status_layer, "Ready \xe2\x80\x94 press SELECT");
   layer_add_child(window_layer, text_layer_get_layer(s_status_layer));
 }
 
@@ -136,8 +128,8 @@ static void init(void) {
   app_message_register_outbox_sent(outbox_sent_handler);
   app_message_register_outbox_failed(outbox_failed_handler);
 
-  // Open AppMessage with generous buffer sizes
-  app_message_open(2048, 256);
+  // Open AppMessage — inbox 2048 for config responses, outbox 1024 for long transcriptions
+  app_message_open(2048, 1024);
 
   // Create dictation session
   s_dictation_session = dictation_session_create(DICTATION_BUFFER_SIZE,

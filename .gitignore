@@ -2,3 +2,5 @@ build/
 .pebble/
 node_modules/
 .claude/
+.lock-waf_*
+pebble_screenshot_*.png

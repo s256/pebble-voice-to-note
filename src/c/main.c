@@ -49,7 +49,16 @@ static void dictation_session_callback(DictationSession *session, DictationSessi
     send_transcription(s_transcription_buffer);
   } else {
     static char s_error_buf[64];
-    snprintf(s_error_buf, sizeof(s_error_buf), "Dictation error: %d", (int)status);
+    const char *reason;
+    switch ((int)status) {
+      case 1: reason = "Transcription failed"; break;
+      case 2: reason = "Not available"; break;
+      case 3: reason = "Connection error"; break;
+      case 4: reason = "Disabled"; break;
+      case 5: reason = "Mic error"; break;
+      default: reason = "Unknown error"; break;
+    }
+    snprintf(s_error_buf, sizeof(s_error_buf), "%s (%d)", reason, (int)status);
     update_status(s_error_buf);
   }
 }

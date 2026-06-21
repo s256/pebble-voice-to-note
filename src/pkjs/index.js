@@ -38,7 +38,9 @@ function saveConfig(config) {
 }
 
 function sendStatus(statusCode) {
-  Pebble.sendAppMessage({ STATUS: statusCode }, function () {
+  var msg = {};
+  msg[Keys.STATUS] = statusCode;
+  Pebble.sendAppMessage(msg, function () {
     console.log('Status ' + statusCode + ' sent to watch');
   }, function (e) {
     console.log('Failed to send status to watch: ' + JSON.stringify(e));
@@ -109,7 +111,7 @@ Pebble.addEventListener('ready', function () {
 // Receive transcription from watch
 Pebble.addEventListener('appmessage', function (e) {
   console.log('Received message: ' + JSON.stringify(e.payload));
-  var transcription = e.payload.TRANSCRIPTION;
+  var transcription = e.payload[Keys.TRANSCRIPTION];
   if (transcription) {
     sendNote(transcription);
   }

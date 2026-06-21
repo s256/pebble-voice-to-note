@@ -1,7 +1,7 @@
 {
   "name": "voice-to-note",
   "author": "snoe",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {},
@@ -28,7 +28,8 @@
         {
           "type": "png",
           "name": "IMAGE_MIC",
-          "file": "images/mic.png"
+          "file": "images/mic.png",
+          "menuIcon": true
         }
       ]
     }
